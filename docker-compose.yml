@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+    postgres:
+        container_name: postgres
+        image: postgres:14.1-alpine
+        restart: unless-stopped
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres1234
+        ports:
+            - '5433:5432'
+        volumes: 
+            - postgres-db:/var/lib/postgresql/data
+            - ./postgres-db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+        networks:
+            - db
+    mysql:
+        container_name: mysql
+        image: mysql:8
+        restart: unless-stopped
+        ports:
+            - 6603:3306
+        volumes:
+            - ./mysql-db/data:/var/lib/mysql
+            - ./mysql-db/init.sql:/data/application/init.sql
+        environment:
+            - MYSQL_ROOT_PASSWORD=mysql1234
+            - MYSQL_PASSWORD=mysql_pass
+            - MYSQL_USER=mysql_user
+            - MYSQL_DATABASE=laravel
+volumes:
+    postgres-db:
+      driver: local
+    mysql-db:
+      driver: local
+networks:
+    db:
